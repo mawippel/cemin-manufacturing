@@ -14,5 +14,14 @@ func InitDB() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Run migrations or initial setup
+
+	const create string = `
+	  CREATE TABLE IF NOT EXISTS colaboradores (
+	  id INTEGER NOT NULL PRIMARY KEY,
+	  time DATETIME NOT NULL,
+	  description TEXT
+  	);`
+	if _, err := DB.Exec(create); err != nil {
+		log.Fatal(err)
+	}
 }
