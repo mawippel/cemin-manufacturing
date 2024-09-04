@@ -7,8 +7,14 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/modelos", GetModelos)
+	router.POST("/modelos", CreateModelo)
+
 	router.GET("/operacoes", GetOperacoes)
-	router.POST("/operacoes", CreateOperacao)
+	router.POST("/modelos/:modeloId/operacoes", CreateOperacao)
+	router.GET("/modelos/:modeloId/operacoes", GetOperacoesByModelo)
+
+	router.POST("/colaboradores", CreateColaborador)
 	router.GET("/colaboradores", GetColaboradores)
+
 	return router
 }

@@ -1,27 +1,24 @@
 package db
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	"controleConfeccao/internal/models"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"log"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("sqlite3", "./data.db")
+	DB, err = gorm.Open(sqlite.Open("./controleConfeccao.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	const create string = `
-	  CREATE TABLE IF NOT EXISTS colaboradores (
-	  id INTEGER NOT NULL PRIMARY KEY,
-	  time DATETIME NOT NULL,
-	  description TEXT
-  	);`
-	if _, err := DB.Exec(create); err != nil {
+	// Auto migrate the schema
+	err = DB.AutoMigrate(&models.Colaborador{}, &models.Modelo{}, &models.Operacao{}, &models.Execucao{})
+	if err != nil {
 		log.Fatal(err)
 	}
 }
