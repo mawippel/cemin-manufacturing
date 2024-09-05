@@ -18,8 +18,16 @@ func GetModelos(c *gin.Context) {
 }
 
 func CreateModelo(c *gin.Context) {
-	// Handler logic
-	c.JSON(http.StatusCreated, gin.H{"message": "CreateModelo"})
+	var modelo models.Modelo
+	if err := c.ShouldBindJSON(&modelo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := db.DB.Create(&modelo).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, modelo)
 }
 
 func GetOperacoes(c *gin.Context) {
@@ -44,18 +52,35 @@ func GetOperacoesByModelo(c *gin.Context) {
 }
 
 func CreateOperacao(c *gin.Context) {
-	// Handler logic
-	c.JSON(http.StatusCreated, gin.H{"message": "CreateOperacao"})
-}
+	var operacao models.Operacao
+	if err := c.ShouldBindJSON(&operacao); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-func GetColaboradores(c *gin.Context) {
-	var colaboradores []models.Colaborador
-	err := db.DB.Find(&colaboradores).Error
-	if err != nil {
+	var modelo models.Modelo
+	if err := db.DB.First(&modelo, c.Param("modeloId")).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Modelo not found"})
+		return
+	}
+
+	operacao.Modelo = modelo
+
+	if err := db.DB.Create(&operacao).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, colaboradores)
+
+	c.JSON(http.StatusCreated, operacao)
+}
+
+func GetColaboradores(c *gin.Context) {
+	var colaborador []models.Colaborador
+	if err := db.DB.Find(&colaborador).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, colaborador)
 }
 
 func CreateColaborador(c *gin.Context) {
