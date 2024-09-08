@@ -16,5 +16,8 @@ func SetupRouter() *gin.Engine {
 	router.POST("/colaboradores", CreateColaborador)
 	router.GET("/colaboradores", GetColaboradores)
 
+	router.POST("/execucoes", CreateExecucao)
+	router.GET("/execucoes", GetExecucoes)
+
 	return router
 }

@@ -95,3 +95,49 @@ func CreateColaborador(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, colaborador)
 }
+
+func GetExecucoes(c *gin.Context) {
+	var execucoes []models.Execucao
+	if err := db.DB.Find(&execucoes).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, execucoes)
+}
+
+func CreateExecucao(c *gin.Context) {
+	var execucao models.Execucao
+	if err := c.ShouldBindJSON(&execucao); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var modelo models.Modelo
+	if err := db.DB.First(&modelo, execucao.ModeloID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Modelo not found"})
+		return
+	}
+
+	var operacao models.Operacao
+	if err := db.DB.First(&operacao, execucao.OperacaoID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Operacao not found"})
+		return
+	}
+
+	var colaborador models.Colaborador
+	if err := db.DB.First(&colaborador, execucao.ColaboradorID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Colaborador not found"})
+		return
+	}
+
+	execucao.Modelo = modelo
+	execucao.Operacao = operacao
+	execucao.Colaborador = colaborador
+
+	if err := db.DB.Create(&execucao).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, execucao)
+}
