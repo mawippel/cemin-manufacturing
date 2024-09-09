@@ -106,33 +106,40 @@ func GetExecucoes(c *gin.Context) {
 }
 
 func CreateExecucao(c *gin.Context) {
-	var execucao models.Execucao
-	if err := c.ShouldBindJSON(&execucao); err != nil {
+	var execucaoRequest models.CreateExecucaoRequest
+	if err := c.ShouldBindJSON(&execucaoRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var modelo models.Modelo
-	if err := db.DB.First(&modelo, execucao.ModeloID).Error; err != nil {
+	if err := db.DB.First(&modelo, execucaoRequest.ModeloID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Modelo not found"})
 		return
 	}
 
 	var operacao models.Operacao
-	if err := db.DB.First(&operacao, execucao.OperacaoID).Error; err != nil {
+	if err := db.DB.First(&operacao, execucaoRequest.OperacaoID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Operacao not found"})
 		return
 	}
 
 	var colaborador models.Colaborador
-	if err := db.DB.First(&colaborador, execucao.ColaboradorID).Error; err != nil {
+	if err := db.DB.First(&colaborador, execucaoRequest.ColaboradorID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Colaborador not found"})
 		return
 	}
 
-	execucao.Modelo = modelo
-	execucao.Operacao = operacao
-	execucao.Colaborador = colaborador
+	requestedAmount := (execucaoRequest.Minutes * 60) / operacao.Time
+	actualAmount := execucaoRequest.Amount
+	percentualProdutivo := float32(actualAmount) / float32(requestedAmount) * 100
+
+	execucao := models.Execucao{
+		Modelo:        modelo,
+		Operacao:      operacao,
+		Colaborador:   colaborador,
+		PercProdutivo: percentualProdutivo,
+	}
 
 	if err := db.DB.Create(&execucao).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
