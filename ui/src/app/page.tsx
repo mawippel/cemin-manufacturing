@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <Layout>
       <h1 className="text-2xl font-bold">Home</h1>
-      <p>Cemin Confeccoes</p>
+      
     </Layout>
   );
 }
