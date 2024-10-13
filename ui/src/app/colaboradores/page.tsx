@@ -11,7 +11,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -94,6 +93,18 @@ export default function ColaboradoresPage() {
                   className="col-span-3"
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="salario" className="text-right">
+                  Salario
+                </Label>
+                <Input
+                  id="salario"
+                  type="number"
+                  step="0.01"
+                  defaultValue="1500.00"
+                  className="col-span-3"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit">Salvar</Button>
@@ -101,12 +112,13 @@ export default function ColaboradoresPage() {
           </DialogContent>
         </Dialog>
 
-        <Table className="w-full">
+        <Table className="mt-3 w-full">
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">ID</TableHead>
               <TableHead>Nome</TableHead>
-              <TableHead className="text-right">Data Admissao</TableHead>
+              <TableHead>Data Admissao</TableHead>
+              <TableHead className="text-right">Salario</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -114,6 +126,7 @@ export default function ColaboradoresPage() {
               <TableRow key={invoice.invoice}>
                 <TableCell className="font-medium">{invoice.invoice}</TableCell>
                 <TableCell>{invoice.paymentStatus}</TableCell>
+                <TableCell>{invoice.totalAmount}</TableCell>
                 <TableCell className="text-right">
                   {invoice.totalAmount}
                 </TableCell>
