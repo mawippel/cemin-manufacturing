@@ -26,7 +26,9 @@ type Operacao struct {
 
 type Colaborador struct {
 	BaseEntity
-	Name string `json:"name"`
+	Name          string    `json:"name"`
+	AdmissionDate time.Time `json:"admission_date"`
+	Salary        float32   `gorm:"type:numeric(10,2)" json:"salary"`
 }
 
 type Execucao struct {
